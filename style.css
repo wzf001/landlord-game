@@ -1,0 +1,612 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #1a472a 0%, #2d5a3f 50%, #1a472a 100%);
+    min-height: 100vh;
+    overflow: hidden;
+    touch-action: manipulation;
+}
+
+.game-container {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+}
+
+.top-bar {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+}
+
+.score-info {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 8px 15px;
+    border-radius: 20px;
+    color: #ffd700;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.score-info span {
+    margin-right: 15px;
+}
+
+.btn-primary, .btn-secondary {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 25px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    touch-action: manipulation;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.6);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(108, 117, 125, 0.6);
+}
+
+.btn-secondary:active {
+    transform: translateY(0);
+}
+
+.btn-lg {
+    min-width: 70px;
+    padding: 12px 20px;
+}
+
+.game-area {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    padding: 60px 10px 140px;
+}
+
+.opponent {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.opponent.left {
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.opponent.top {
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.player-info {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    margin: 0 auto 5px;
+    border: 2px solid #ffd700;
+    background-size: cover;
+    background-position: center;
+}
+
+.avatar-left {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.avatar-top {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.avatar-player {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.player-name {
+    color: white;
+    font-weight: bold;
+    font-size: 13px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.player-score {
+    color: #ffd700;
+    font-size: 12px;
+}
+
+.cards-back {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.card-back {
+    width: 28px;
+    height: 40px;
+    background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);
+    border: 2px solid #8b0000;
+    border-radius: 4px;
+    margin-left: -18px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.card-back:first-child {
+    margin-left: 0;
+}
+
+.center-area {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.dipai-area {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.dipai-label {
+    color: #ffd700;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.dipai-cards {
+    display: flex;
+    justify-content: center;
+}
+
+.player-area {
+    position: absolute;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    width: 100%;
+}
+
+.player-cards {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+    min-height: 90px;
+    flex-wrap: wrap;
+    padding: 0 5px;
+}
+
+.card {
+    width: 56px;
+    height: 80px;
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    margin-left: -35px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    user-select: none;
+    touch-action: manipulation;
+}
+
+.card:first-child {
+    margin-left: 0;
+}
+
+.card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.card.selected {
+    transform: translateY(-25px);
+    border-color: #ff6b35;
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.5);
+}
+
+.card-value {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.card-suit {
+    position: absolute;
+    top: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+}
+
+.card.red {
+    color: #c41e3a;
+}
+
+.card.black {
+    color: #1a1a1a;
+}
+
+.card.joker-red {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
+    color: white;
+}
+
+.card.joker-black {
+    background: linear-gradient(135deg, #4a4a4a 0%, #2a2a2a 100%);
+    color: white;
+}
+
+.played-cards {
+    min-height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 8px 0;
+}
+
+.played-cards .card {
+    width: 42px;
+    height: 60px;
+    margin-left: -25px;
+    cursor: default;
+}
+
+.played-cards .card:hover {
+    transform: none;
+}
+
+.played-cards .card:first-child {
+    margin-left: 0;
+}
+
+.player-info-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.player-details {
+    text-align: left;
+}
+
+.action-bar {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.call-btns {
+    display: flex;
+    gap: 10px;
+}
+
+.play-btns {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.btn-call {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    transition: all 0.3s ease;
+    touch-action: manipulation;
+}
+
+.btn-call:hover {
+    background: white;
+    transform: scale(1.05);
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #2d5a3f 0%, #1a472a 100%);
+    padding: 30px 40px;
+    border-radius: 20px;
+    text-align: center;
+    border: 3px solid #ffd700;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    margin: 20px;
+}
+
+.modal-content h2 {
+    color: #ffd700;
+    font-size: 28px;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.modal-content p {
+    color: white;
+    font-size: 16px;
+    margin-bottom: 25px;
+}
+
+.landlord-icon {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background: #ffd700;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    top: -4px;
+    right: -4px;
+    z-index: 10;
+}
+
+.pass-text {
+    color: #ffd700;
+    font-size: 18px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    animation: fadeInOut 2s ease-in-out;
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0; }
+    20%, 80% { opacity: 1; }
+}
+
+.waiting-text {
+    color: #ffd700;
+    font-size: 14px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* H5 移动端响应式优化 */
+@media screen and (max-width: 768px) {
+    .game-area {
+        padding: 55px 5px 130px;
+    }
+    
+    .top-bar {
+        top: 8px;
+        left: 8px;
+        right: 8px;
+    }
+    
+    .score-info {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    
+    .score-info span {
+        margin-right: 10px;
+    }
+    
+    .btn-primary, .btn-secondary {
+        padding: 8px 20px;
+        font-size: 14px;
+    }
+    
+    .opponent.left {
+        left: 5px;
+    }
+    
+    .opponent.top {
+        top: 55px;
+    }
+    
+    .avatar {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .player-name {
+        font-size: 11px;
+    }
+    
+    .player-score {
+        font-size: 10px;
+    }
+    
+    .card-back {
+        width: 24px;
+        height: 34px;
+        margin-left: -15px;
+    }
+    
+    .player-cards {
+        padding: 0 3px;
+    }
+    
+    .card {
+        width: 48px;
+        height: 68px;
+        margin-left: -30px;
+    }
+    
+    .card-value {
+        top: 4px;
+        left: 4px;
+        font-size: 14px;
+    }
+    
+    .card-suit {
+        top: 24px;
+        font-size: 20px;
+    }
+    
+    .card:hover {
+        transform: translateY(-12px);
+    }
+    
+    .card.selected {
+        transform: translateY(-20px);
+    }
+    
+    .played-cards .card {
+        width: 36px;
+        height: 50px;
+        margin-left: -20px;
+    }
+    
+    .player-area {
+        bottom: 80px;
+    }
+    
+    .action-bar {
+        bottom: 8px;
+        gap: 8px;
+    }
+    
+    .play-btns {
+        gap: 6px;
+    }
+    
+    .btn-primary, .btn-secondary {
+        padding: 12px 18px;
+        font-size: 15px;
+        min-height: 44px;
+    }
+    
+    .btn-lg {
+        min-width: 80px;
+    }
+    
+    .modal-content {
+        padding: 25px 30px;
+        margin: 15px;
+    }
+    
+    .modal-content h2 {
+        font-size: 24px;
+    }
+    
+    .modal-content p {
+        font-size: 14px;
+    }
+}
+
+/* 超小屏幕优化 */
+@media screen and (max-width: 480px) {
+    .card {
+        width: 42px;
+        height: 60px;
+        margin-left: -26px;
+    }
+    
+    .card-value {
+        font-size: 12px;
+    }
+    
+    .card-suit {
+        top: 20px;
+        font-size: 18px;
+    }
+    
+    .btn-primary, .btn-secondary {
+        padding: 8px 14px;
+        font-size: 13px;
+    }
+    
+    .score-info {
+        font-size: 11px;
+        padding: 5px 10px;
+    }
+}
+
+/* 横屏模式优化 */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+    .game-area {
+        padding: 50px 10px 110px;
+    }
+    
+    .player-cards {
+        min-height: 70px;
+    }
+    
+    .card {
+        width: 44px;
+        height: 62px;
+        margin-left: -28px;
+    }
+    
+    .player-area {
+        bottom: 70px;
+    }
+    
+    .action-bar {
+        bottom: 5px;
+    }
+}

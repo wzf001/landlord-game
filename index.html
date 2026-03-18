@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    <title>欢乐斗地主 H5</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎴</text></svg>">
+</head>
+<body>
+    <div class="game-container">
+        <!-- 顶部信息栏 -->
+        <div class="top-bar">
+            <div class="score-info">
+                <span>底分: <span id="base-score">0</span></span>
+                <span>倍数: <span id="multiplier">1</span></span>
+            </div>
+            <button id="start-btn" class="btn-primary">开始游戏</button>
+        </div>
+
+        <!-- 游戏区域 -->
+        <div class="game-area">
+            <!-- 对手1 - 左侧 -->
+            <div class="opponent left">
+                <div class="player-info">
+                    <div class="avatar avatar-left"></div>
+                    <div class="player-name">电脑1</div>
+                    <div class="player-score">积分: 0</div>
+                </div>
+                <div class="cards-back" id="opponent1-cards"></div>
+                <div class="played-cards" id="opponent1-played"></div>
+                <div class="call-btns" id="opponent1-call" style="display: none;">
+                    <button class="btn-call">不叫</button>
+                    <button class="btn-call">叫地主</button>
+                </div>
+            </div>
+
+            <!-- 中间区域 -->
+            <div class="center-area">
+                <!-- 底牌区域 -->
+                <div class="dipai-area" id="dipai-area">
+                    <div class="dipai-label">底牌</div>
+                    <div class="dipai-cards" id="dipai-cards"></div>
+                </div>
+
+                <!-- 对手2 - 上方 -->
+                <div class="opponent top">
+                    <div class="player-info">
+                        <div class="avatar avatar-top"></div>
+                        <div class="player-name">电脑2</div>
+                        <div class="player-score">积分: 0</div>
+                    </div>
+                    <div class="cards-back" id="opponent2-cards"></div>
+                    <div class="played-cards" id="opponent2-played"></div>
+                    <div class="call-btns" id="opponent2-call" style="display: none;">
+                        <button class="btn-call">不叫</button>
+                        <button class="btn-call">叫地主</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 玩家区域 -->
+            <div class="player-area">
+                <div class="played-cards" id="player-played"></div>
+                <div class="player-cards" id="player-cards"></div>
+                <div class="player-info-bottom">
+                    <div class="avatar avatar-player"></div>
+                    <div class="player-details">
+                        <div class="player-name">我</div>
+                        <div class="player-score">积分: 0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部操作栏 -->
+        <div class="action-bar" id="action-bar">
+            <div class="call-btns" id="call-btns" style="display: none;">
+                <button class="btn-secondary btn-lg" id="btn-no-call">不叫</button>
+                <button class="btn-primary btn-lg" id="btn-call">叫地主</button>
+            </div>
+            <div class="play-btns" id="play-btns" style="display: none;">
+                <button class="btn-secondary btn-lg" id="btn-hint">提示</button>
+                <button class="btn-secondary btn-lg" id="btn-pass">不出</button>
+                <button class="btn-primary btn-lg" id="btn-play">出牌</button>
+            </div>
+        </div>
+
+        <!-- 游戏结束弹窗 -->
+        <div class="modal" id="game-over-modal" style="display: none;">
+            <div class="modal-content">
+                <h2 id="game-result">游戏结束</h2>
+                <p id="game-score"></p>
+                <button class="btn-primary" id="btn-restart">再来一局</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

@@ -1,5 +1,168 @@
 // 斗地主游戏核心逻辑
 
+// 音效管理器
+class AudioManager {
+    constructor() {
+        this.musicEnabled = true;
+        this.soundEnabled = true;
+        this.audioContext = null;
+        this.init();
+    }
+
+    init() {
+        try {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+            console.log('Web Audio API not supported');
+        }
+    }
+
+    // 生成背景音乐（使用 Web Audio API 生成简单的循环旋律）
+    playBackgroundMusic() {
+        if (!this.musicEnabled || !this.audioContext) return;
+        
+        this.stopBackgroundMusic();
+        
+        // 创建一个简单的背景音乐循环
+        const playNote = (frequency, startTime, duration, volume = 0.1) => {
+            const oscillator = this.audioContext.createOscillator();
+            const gainNode = this.audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(this.audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0, startTime);
+            gainNode.gain.linearRampToValueAtTime(volume, startTime + 0.05);
+            gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
+            
+            oscillator.start(startTime);
+            oscillator.stop(startTime + duration);
+        };
+        
+        // 简单的旋律
+        const melody = [262, 294, 330, 349, 392, 440, 494, 523];
+        const bass = [131, 147, 165, 175, 196, 220, 247, 262];
+        
+        let time = this.audioContext.currentTime;
+        let noteIndex = 0;
+        
+        const playLoop = () => {
+            if (!this.musicEnabled) return;
+            
+            // 主旋律
+            playNote(melody[noteIndex % melody.length], time, 0.4, 0.08);
+            // 低音伴奏
+            playNote(bass[Math.floor(noteIndex / 2) % bass.length], time, 0.6, 0.05);
+            
+            noteIndex++;
+            time += 0.5;
+            
+            if (this.musicEnabled) {
+                setTimeout(playLoop, 500);
+            }
+        };
+        
+        playLoop();
+        this.musicPlaying = true;
+    }
+
+    stopBackgroundMusic() {
+        this.musicPlaying = false;
+    }
+
+    // 生成音效
+    playSound(type) {
+        if (!this.soundEnabled || !this.audioContext) return;
+        
+        const ctx = this.audioContext;
+        const time = ctx.currentTime;
+        
+        switch(type) {
+            case 'click':
+                this.playTone(800, time, 0.1, 0.1);
+                break;
+            case 'play':
+                this.playTone(523, time, 0.1, 0.15);
+                this.playTone(659, time + 0.1, 0.1, 0.12);
+                break;
+            case 'bomb':
+                // 炸弹音效 - 低沉的爆炸声
+                for (let i = 0; i < 5; i++) {
+                    this.playTone(100 + Math.random() * 50, time + i * 0.05, 0.2, 0.2 - i * 0.03, 'sawtooth');
+                }
+                break;
+            case 'win':
+                // 胜利音效
+                const winNotes = [523, 659, 784, 1047];
+                winNotes.forEach((freq, i) => {
+                    this.playTone(freq, time + i * 0.15, 0.3, 0.15);
+                });
+                break;
+            case 'lose':
+                // 失败音效
+                this.playTone(300, time, 0.5, 0.15, 'sawtooth');
+                this.playTone(200, time + 0.2, 0.5, 0.12, 'sawtooth');
+                break;
+            case 'pass':
+                this.playTone(400, time, 0.1, 0.08);
+                this.playTone(300, time + 0.1, 0.15, 0.06);
+                break;
+            case 'deal':
+                // 发牌音效
+                for (let i = 0; i < 5; i++) {
+                    setTimeout(() => {
+                        this.playTone(1000 + Math.random() * 200, ctx.currentTime, 0.05, 0.08);
+                    }, i * 50);
+                }
+                break;
+        }
+    }
+
+    playTone(frequency, startTime, duration, volume, type = 'sine') {
+        if (!this.audioContext) return;
+        
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+        
+        oscillator.frequency.value = frequency;
+        oscillator.type = type;
+        
+        gainNode.gain.setValueAtTime(0, startTime);
+        gainNode.gain.linearRampToValueAtTime(volume, startTime + 0.01);
+        gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
+        
+        oscillator.start(startTime);
+        oscillator.stop(startTime + duration);
+    }
+
+    toggleMusic() {
+        this.musicEnabled = !this.musicEnabled;
+        if (this.musicEnabled) {
+            this.playBackgroundMusic();
+        } else {
+            this.stopBackgroundMusic();
+        }
+        return this.musicEnabled;
+    }
+
+    toggleSound() {
+        this.soundEnabled = !this.soundEnabled;
+        return this.soundEnabled;
+    }
+
+    resumeContext() {
+        if (this.audioContext && this.audioContext.state === 'suspended') {
+            this.audioContext.resume();
+        }
+    }
+}
+
 // 牌值定义
 const CARD_VALUES = {
     '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
@@ -454,6 +617,7 @@ class Game {
         this.multiplier = 1;
         this.passCount = 0;
         this.callPhase = { current: 0, lastCall: -1, canCall: true };
+        this.audio = new AudioManager();
         
         this.initUI();
         this.bindEvents();
@@ -462,6 +626,8 @@ class Game {
     initUI() {
         this.ui = {
             startBtn: document.getElementById('start-btn'),
+            musicBtn: document.getElementById('music-btn'),
+            soundBtn: document.getElementById('sound-btn'),
             baseScore: document.getElementById('base-score'),
             multiplier: document.getElementById('multiplier'),
             playerCards: document.getElementById('player-cards'),
@@ -486,16 +652,55 @@ class Game {
     }
 
     bindEvents() {
-        this.ui.startBtn.addEventListener('click', () => this.startGame());
-        this.ui.btnNoCall.addEventListener('click', () => this.handleCall(false));
-        this.ui.btnCall.addEventListener('click', () => this.handleCall(true));
-        this.ui.btnHint.addEventListener('click', () => this.handleHint());
-        this.ui.btnPass.addEventListener('click', () => this.handlePass());
-        this.ui.btnPlay.addEventListener('click', () => this.handlePlay());
-        this.ui.btnRestart.addEventListener('click', () => this.restartGame());
+        this.ui.startBtn.addEventListener('click', () => {
+            this.audio.resumeContext();
+            this.audio.playSound('click');
+            this.startGame();
+        });
+        this.ui.musicBtn.addEventListener('click', () => {
+            this.audio.resumeContext();
+            const enabled = this.audio.toggleMusic();
+            this.ui.musicBtn.textContent = enabled ? '🔊' : '🔇';
+            this.ui.musicBtn.classList.toggle('muted', !enabled);
+            this.audio.playSound('click');
+        });
+        this.ui.soundBtn.addEventListener('click', () => {
+            this.audio.resumeContext();
+            const enabled = this.audio.toggleSound();
+            this.ui.soundBtn.textContent = enabled ? '🔔' : '🔕';
+            this.ui.soundBtn.classList.toggle('muted', !enabled);
+            this.audio.playSound('click');
+        });
+        this.ui.btnNoCall.addEventListener('click', () => {
+            this.audio.playSound('click');
+            this.handleCall(false);
+        });
+        this.ui.btnCall.addEventListener('click', () => {
+            this.audio.playSound('click');
+            this.handleCall(true);
+        });
+        this.ui.btnHint.addEventListener('click', () => {
+            this.audio.playSound('click');
+            this.handleHint();
+        });
+        this.ui.btnPass.addEventListener('click', () => {
+            this.audio.playSound('pass');
+            this.handlePass();
+        });
+        this.ui.btnPlay.addEventListener('click', () => {
+            this.audio.playSound('click');
+            this.handlePlay();
+        });
+        this.ui.btnRestart.addEventListener('click', () => {
+            this.audio.playSound('click');
+            this.restartGame();
+        });
     }
 
     startGame() {
+        this.audio.playBackgroundMusic();
+        this.audio.playSound('deal');
+        
         this.deck = new Deck();
         this.deck.shuffle();
         const deal = this.deck.deal();
@@ -712,6 +917,9 @@ class Game {
         if (analysis.type === 'bomb' || analysis.type === 'rocket') {
             this.multiplier *= 2;
             this.updateScoreDisplay();
+            this.audio.playSound('bomb');
+        } else {
+            this.audio.playSound('play');
         }
         
         this.renderPlayedCards(0, this.selectedCards);
@@ -735,7 +943,17 @@ class Game {
     endGame(winner) {
         this.phase = 'ended';
         
+        this.audio.stopBackgroundMusic();
+        
         const landlordWin = winner === this.landlord;
+        const playerWin = (winner === 0) || (!landlordWin && this.landlord !== 0);
+        
+        if (playerWin) {
+            this.audio.playSound('win');
+        } else {
+            this.audio.playSound('lose');
+        }
+        
         const score = this.baseScore * this.multiplier;
         
         if (landlordWin) {
@@ -749,8 +967,6 @@ class Game {
                 else this.scores[i] += score;
             }
         }
-        
-        const playerWin = (winner === 0) || (!landlordWin && this.landlord !== 0);
         
         this.ui.gameResult.textContent = playerWin ? '🎉 你赢了！' : '😢 你输了！';
         this.ui.gameScore.textContent = `积分变化: ${playerWin ? '+' : ''}${this.scores[0]}`;

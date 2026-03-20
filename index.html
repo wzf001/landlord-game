@@ -18,7 +18,11 @@
                 <span>底分: <span id="base-score">0</span></span>
                 <span>倍数: <span id="multiplier">1</span></span>
             </div>
-            <button id="start-btn" class="btn-primary">开始游戏</button>
+            <div class="top-controls">
+                <button id="music-btn" class="btn-icon" title="背景音乐">🔊</button>
+                <button id="sound-btn" class="btn-icon" title="音效">🔔</button>
+                <button id="start-btn" class="btn-primary">开始游戏</button>
+            </div>
         </div>
 
         <!-- 游戏区域 -->
@@ -99,6 +103,16 @@
         </div>
     </div>
 
+    <!-- 音效和背景音乐 -->
+    <audio id="bg-music" loop preload="auto"></audio>
+    <audio id="sound-click" preload="auto"></audio>
+    <audio id="sound-play" preload="auto"></audio>
+    <audio id="sound-bomb" preload="auto"></audio>
+    <audio id="sound-win" preload="auto"></audio>
+    <audio id="sound-lose" preload="auto"></audio>
+    <audio id="sound-pass" preload="auto"></audio>
+    <audio id="sound-deal" preload="auto"></audio>
+    
     <script src="game.js"></script>
 </body>
 </html>
